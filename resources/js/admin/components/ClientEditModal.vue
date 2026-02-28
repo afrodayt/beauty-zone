@@ -36,6 +36,9 @@
                 {{ enumLabel(status) }}
               </option>
             </select>
+            <div class="mt-2">
+              <ClientStatusBadge :status="form.status" />
+            </div>
           </div>
           <div class="col-12">
             <label class="form-label">Заметки</label>
@@ -193,6 +196,7 @@
 import { onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import BaseModal from "./BaseModal.vue";
+import ClientStatusBadge from "./ClientStatusBadge.vue";
 import { api } from "../services/api";
 import { eventBus, events } from "../services/eventBus";
 import { pushFlash } from "../services/flash";

@@ -67,17 +67,26 @@
                   <td>{{ client.full_name }}</td>
                   <td>{{ client.phone }}</td>
                   <td>
-                    <span class="badge text-bg-light">{{ enumLabel(client.status) }}</span>
+                    <ClientStatusBadge :status="client.status" />
                   </td>
                   <td>{{ client.balance_eur.toFixed(2) }}</td>
                   <td class="text-end">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-primary"
-                      title="Редактировать клиента"
-                      @click="openEditModal(client.id)">
-                      <i class="bi bi-pencil-square" />
-                    </button>
+                    <div class="d-inline-flex gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        title="Редактировать клиента"
+                        @click="openEditModal(client.id)">
+                        <i class="bi bi-pencil-square" />
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger"
+                        title="Удалить клиента"
+                        @click="openDeleteModal(client)">
+                        <i class="bi bi-trash" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
                 <tr v-if="!clients.length">
@@ -108,6 +117,7 @@
     </div>
     <ClientCreateModal :statuses="statuses" @created="handleClientCreated" />
     <ClientEditModal :statuses="statuses" @updated="handleClientUpdated" />
+    <ClientDeleteModal @deleted="handleClientDeleted" />
   </div>
 </template>
 
@@ -115,7 +125,9 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ClientCreateModal from "../components/ClientCreateModal.vue";
+import ClientDeleteModal from "../components/ClientDeleteModal.vue";
 import ClientEditModal from "../components/ClientEditModal.vue";
+import ClientStatusBadge from "../components/ClientStatusBadge.vue";
 import { api } from "../services/api";
 import { eventBus, events } from "../services/eventBus";
 import { enumLabel } from "../services/labels";
@@ -169,12 +181,25 @@ function openEditModal(clientId) {
   eventBus.$emit(events.SHOW_CLIENT_EDIT_MODAL, { clientId });
 }
 
+function openDeleteModal(client) {
+  eventBus.$emit(events.SHOW_CLIENT_DELETE_MODAL, {
+    clientId: client.id,
+    clientName: client.full_name,
+  });
+}
+
 function handleClientCreated() {
   loadClients(1);
 }
 
 function handleClientUpdated() {
   loadClients(meta.value.current_page || 1);
+}
+
+function handleClientDeleted() {
+  const currentPage = meta.value.current_page || 1;
+  const nextPage = clients.value.length === 1 ? Math.max(1, currentPage - 1) : currentPage;
+  loadClients(nextPage);
 }
 
 watch(

@@ -20,6 +20,9 @@
             {{ enumLabel(status) }}
           </option>
         </select>
+        <div class="mt-2">
+          <ClientStatusBadge :status="form.status" />
+        </div>
       </div>
       <div class="col-12">
         <label class="form-label">Заметки</label>
@@ -43,6 +46,7 @@ import { pushFlash } from "../services/flash";
 import { enumLabel } from "../services/labels";
 import { eventBus, events } from "../services/eventBus";
 import BaseModal from "./BaseModal.vue";
+import ClientStatusBadge from "./ClientStatusBadge.vue";
 
 const emit = defineEmits(["created"]);
 
