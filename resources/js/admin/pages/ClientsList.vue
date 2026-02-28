@@ -5,30 +5,30 @@
         <div class="card-body">
           <div class="row g-2 align-items-end">
             <div class="col-md-5">
-              <label class="form-label">Search</label>
+              <label class="form-label">Поиск</label>
               <input
                 v-model="filters.search"
                 type="text"
                 class="form-control"
-                placeholder="Name or phone"
+                placeholder="Имя или телефон"
                 @keyup.enter="loadClients(1)" />
             </div>
             <div class="col-md-3">
-              <label class="form-label">Status</label>
+              <label class="form-label">Статус</label>
               <select v-model="filters.status" class="form-select">
-                <option value="">All statuses</option>
+                <option value="">Все статусы</option>
                 <option v-for="status in statuses" :key="status" :value="status">
-                  {{ status }}
+                  {{ enumLabel(status) }}
                 </option>
               </select>
             </div>
             <div class="col-md-4 d-flex gap-2">
               <button class="btn btn-primary" type="button" :disabled="loading" @click="loadClients(1)">
                 <i class="bi bi-search me-1" />
-                Filter
+                Применить
               </button>
               <button class="btn btn-outline-secondary" type="button" :disabled="loading" @click="resetFilters">
-                Reset
+                Сброс
               </button>
             </div>
           </div>
@@ -38,37 +38,37 @@
 
     <div class="col-lg-4">
       <div class="card shadow-sm h-100">
-        <div class="card-header fw-semibold">New Client</div>
+        <div class="card-header fw-semibold">Новый клиент</div>
         <div class="card-body">
           <form class="row g-2" @submit.prevent="createClient">
             <div class="col-12">
-              <label class="form-label">Full Name</label>
+              <label class="form-label">ФИО</label>
               <input v-model="form.full_name" type="text" class="form-control" required />
             </div>
             <div class="col-12">
-              <label class="form-label">Phone</label>
+              <label class="form-label">Телефон</label>
               <input v-model="form.phone" type="text" class="form-control" required />
             </div>
             <div class="col-12">
-              <label class="form-label">Birth Date</label>
+              <label class="form-label">Дата рождения</label>
               <input v-model="form.birth_date" type="date" class="form-control" />
             </div>
             <div class="col-12">
-              <label class="form-label">Status</label>
+              <label class="form-label">Статус</label>
               <select v-model="form.status" class="form-select" required>
                 <option v-for="status in statuses" :key="status" :value="status">
-                  {{ status }}
+                  {{ enumLabel(status) }}
                 </option>
               </select>
             </div>
             <div class="col-12">
-              <label class="form-label">Notes</label>
+              <label class="form-label">Заметки</label>
               <textarea v-model="form.notes" class="form-control" rows="2" />
             </div>
             <div class="col-12">
               <button class="btn btn-success" type="submit" :disabled="loading">
                 <i class="bi bi-plus-circle me-1" />
-                Create
+                Создать
               </button>
             </div>
           </form>
@@ -79,18 +79,18 @@
     <div class="col-lg-8">
       <div class="card shadow-sm">
         <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-          <span>Clients</span>
-          <small class="text-secondary">Total: {{ meta.total || clients.length }}</small>
+          <span>Клиенты</span>
+          <small class="text-secondary">Всего: {{ meta.total || clients.length }}</small>
         </div>
         <div class="table-responsive">
           <table class="table align-middle mb-0">
             <thead>
               <tr>
                 <th>#</th>
-                <th>Client</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Balance, EUR</th>
+                <th>Клиент</th>
+                <th>Телефон</th>
+                <th>Статус</th>
+                <th>Баланс, EUR</th>
                 <th />
               </tr>
             </thead>
@@ -100,15 +100,15 @@
                 <td>{{ client.full_name }}</td>
                 <td>{{ client.phone }}</td>
                 <td>
-                  <span class="badge text-bg-light">{{ client.status }}</span>
+                  <span class="badge text-bg-light">{{ enumLabel(client.status) }}</span>
                 </td>
                 <td>{{ client.balance_eur.toFixed(2) }}</td>
                 <td class="text-end">
-                  <RouterLink class="btn btn-sm btn-outline-primary" :to="`/clients/${client.id}`">Open</RouterLink>
+                  <RouterLink class="btn btn-sm btn-outline-primary" :to="`/clients/${client.id}`">Открыть</RouterLink>
                 </td>
               </tr>
               <tr v-if="!clients.length">
-                <td colspan="6" class="text-center text-secondary py-4">No clients found.</td>
+                <td colspan="6" class="text-center text-secondary py-4">Клиенты не найдены.</td>
               </tr>
             </tbody>
           </table>
@@ -119,15 +119,15 @@
             type="button"
             :disabled="meta.current_page <= 1"
             @click="loadClients(meta.current_page - 1)">
-            Prev
+            Назад
           </button>
-          <small class="text-secondary">Page {{ meta.current_page || 1 }} / {{ meta.last_page || 1 }}</small>
+          <small class="text-secondary">Страница {{ meta.current_page || 1 }} / {{ meta.last_page || 1 }}</small>
           <button
             class="btn btn-sm btn-outline-secondary"
             type="button"
             :disabled="meta.current_page >= meta.last_page"
             @click="loadClients(meta.current_page + 1)">
-            Next
+            Вперед
           </button>
         </div>
       </div>
@@ -139,6 +139,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { api } from "../services/api";
 import { pushFlash } from "../services/flash";
+import { enumLabel } from "../services/labels";
 
 const loading = ref(false);
 const statuses = ref(["NEW", "ACTIVE", "LOST"]);
@@ -189,7 +190,7 @@ async function createClient() {
   loading.value = true;
   try {
     await api.post("/clients", form);
-    pushFlash("Client created");
+    pushFlash("Клиент создан");
     Object.assign(form, {
       full_name: "",
       phone: "",

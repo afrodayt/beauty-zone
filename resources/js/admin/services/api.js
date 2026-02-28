@@ -13,8 +13,13 @@ const client = axios.create({
 client.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error?.response?.status === 401) {
+      window.location.href = "/admin/login";
+      return Promise.reject(error);
+    }
+
     const message =
-      error?.response?.data?.message || error?.response?.data?.error || "Request failed. Please try again.";
+      error?.response?.data?.message || error?.response?.data?.error || "Ошибка запроса. Попробуйте еще раз.";
 
     pushFlash(message, "danger", 5000);
     return Promise.reject(error);

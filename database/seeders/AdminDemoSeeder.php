@@ -28,13 +28,10 @@ class AdminDemoSeeder extends Seeder
      */
     public function run(): void
     {
-        $masters = collect([
-            ['name' => 'Anna Master', 'email' => 'anna.master@example.com'],
-            ['name' => 'Olga Master', 'email' => 'olga.master@example.com'],
-        ])->map(static fn (array $data): User => User::query()->firstOrCreate(
-            ['email' => $data['email']],
-            ['name' => $data['name'], 'password' => Hash::make('password')]
-        ));
+        $admin = User::query()->firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            ['name' => 'Admin', 'password' => Hash::make('admin@gmail.com')]
+        );
 
         $services = collect([
             ['name' => 'Laser Epilation', 'code' => 'laser-epilation', 'color' => '#0d6efd', 'duration_minutes' => 60, 'base_price' => 95],
@@ -100,7 +97,7 @@ class AdminDemoSeeder extends Seeder
             [
                 'service_id' => $services[0]->id,
                 'device_id' => $devices[0]->id,
-                'master_id' => $masters[0]->id,
+                'master_id' => $admin->id,
                 'client_package_id' => $package->id,
                 'zone' => 'Legs',
                 'price' => 95,
@@ -126,7 +123,7 @@ class AdminDemoSeeder extends Seeder
             [
                 'service_id' => $services[1]->id,
                 'device_id' => $devices[1]->id,
-                'master_id' => $masters[1]->id,
+                'master_id' => $admin->id,
                 'zone' => 'Face',
                 'price' => 70,
                 'payment_method' => PaymentMethod::CARD->value,

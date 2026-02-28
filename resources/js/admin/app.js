@@ -1,9 +1,10 @@
-import { createApp } from "vue";
+import { createApp, h } from "vue";
 import "bootstrap";
+import { RouterView } from "vue-router";
 import { createRouter } from "./router";
 
 const app = createApp({
-  template: "<RouterView />",
+  render: () => h(RouterView),
 });
 
 app.use(createRouter());

@@ -2,24 +2,24 @@
   <div class="row g-4">
     <div class="col-lg-5">
       <div class="card shadow-sm mb-4">
-        <div class="card-header fw-semibold">Create Package Template</div>
+        <div class="card-header fw-semibold">Создать шаблон пакета</div>
         <div class="card-body">
           <form class="row g-2" @submit.prevent="createTemplate">
             <div class="col-12">
-              <label class="form-label">Name</label>
+              <label class="form-label">Название</label>
               <input v-model="templateForm.name" type="text" class="form-control" required />
             </div>
             <div class="col-md-6">
-              <label class="form-label">Service</label>
+              <label class="form-label">Услуга</label>
               <select v-model.number="templateForm.service_id" class="form-select">
-                <option value="">No service</option>
+                <option value="">Без услуги</option>
                 <option v-for="service in meta.services" :key="service.id" :value="service.id">
                   {{ service.name }}
                 </option>
               </select>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Procedures</label>
+              <label class="form-label">Количество процедур</label>
               <input
                 v-model.number="templateForm.procedure_count"
                 type="number"
@@ -28,7 +28,7 @@
                 required />
             </div>
             <div class="col-md-6">
-              <label class="form-label">Price, EUR</label>
+              <label class="form-label">Цена, EUR</label>
               <input
                 v-model.number="templateForm.price"
                 type="number"
@@ -38,25 +38,25 @@
                 required />
             </div>
             <div class="col-md-6">
-              <label class="form-label">Duration (days)</label>
+              <label class="form-label">Длительность (дней)</label>
               <input v-model.number="templateForm.duration_days" type="number" min="1" class="form-control" required />
             </div>
             <div class="col-12">
-              <button class="btn btn-success" type="submit">Create Template</button>
+              <button class="btn btn-success" type="submit">Создать шаблон</button>
             </div>
           </form>
         </div>
       </div>
 
       <div class="card shadow-sm">
-        <div class="card-header fw-semibold">Templates</div>
+        <div class="card-header fw-semibold">Шаблоны</div>
         <div class="table-responsive">
           <table class="table mb-0">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Procedures</th>
-                <th>Price</th>
+                <th>Название</th>
+                <th>Процедуры</th>
+                <th>Цена</th>
               </tr>
             </thead>
             <tbody>
@@ -66,7 +66,7 @@
                 <td>{{ formatMoney(item.price) }}</td>
               </tr>
               <tr v-if="!templates.length">
-                <td colspan="3" class="text-center text-secondary py-3">No templates</td>
+                <td colspan="3" class="text-center text-secondary py-3">Шаблонов нет</td>
               </tr>
             </tbody>
           </table>
@@ -76,36 +76,36 @@
 
     <div class="col-lg-7">
       <div class="card shadow-sm mb-4">
-        <div class="card-header fw-semibold">Assign Client Package</div>
+        <div class="card-header fw-semibold">Назначить пакет клиенту</div>
         <div class="card-body">
           <form class="row g-2" @submit.prevent="createClientPackage">
             <div class="col-md-6">
-              <label class="form-label">Client</label>
+              <label class="form-label">Клиент</label>
               <select v-model.number="clientPackageForm.client_id" class="form-select" required>
-                <option value="">Select client</option>
+                <option value="">Выберите клиента</option>
                 <option v-for="client in meta.clients" :key="client.id" :value="client.id">
                   {{ client.full_name }}
                 </option>
               </select>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Template</label>
+              <label class="form-label">Шаблон</label>
               <select
                 v-model.number="clientPackageForm.package_template_id"
                 class="form-select"
                 @change="applyTemplate">
-                <option value="">Custom package</option>
+                <option value="">Свободный пакет</option>
                 <option v-for="item in templates" :key="item.id" :value="item.id">
                   {{ item.name }}
                 </option>
               </select>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Name</label>
+              <label class="form-label">Название</label>
               <input v-model="clientPackageForm.name" type="text" class="form-control" required />
             </div>
             <div class="col-md-3">
-              <label class="form-label">Total</label>
+              <label class="form-label">Всего</label>
               <input
                 v-model.number="clientPackageForm.total_procedures"
                 type="number"
@@ -114,7 +114,7 @@
                 required />
             </div>
             <div class="col-md-3">
-              <label class="form-label">Remaining</label>
+              <label class="form-label">Осталось</label>
               <input
                 v-model.number="clientPackageForm.remaining_procedures"
                 type="number"
@@ -123,7 +123,7 @@
                 required />
             </div>
             <div class="col-md-4">
-              <label class="form-label">Amount, EUR</label>
+              <label class="form-label">Сумма, EUR</label>
               <input
                 v-model.number="clientPackageForm.purchased_amount"
                 type="number"
@@ -133,35 +133,35 @@
                 required />
             </div>
             <div class="col-md-4">
-              <label class="form-label">Expires At</label>
+              <label class="form-label">Действует до</label>
               <input v-model="clientPackageForm.expires_at" type="datetime-local" class="form-control" />
             </div>
             <div class="col-md-4">
-              <label class="form-label">Status</label>
+              <label class="form-label">Статус</label>
               <select v-model="clientPackageForm.status" class="form-select" required>
                 <option v-for="status in meta.enums.package_statuses" :key="status" :value="status">
-                  {{ status }}
+                  {{ enumLabel(status) }}
                 </option>
               </select>
             </div>
             <div class="col-12">
-              <button class="btn btn-success" type="submit">Assign Package</button>
+              <button class="btn btn-success" type="submit">Назначить пакет</button>
             </div>
           </form>
         </div>
       </div>
 
       <div class="card shadow-sm">
-        <div class="card-header fw-semibold">Client Packages</div>
+        <div class="card-header fw-semibold">Пакеты клиентов</div>
         <div class="table-responsive">
           <table class="table mb-0">
             <thead>
               <tr>
-                <th>Client</th>
-                <th>Name</th>
-                <th>Remain/Total</th>
-                <th>Expires</th>
-                <th>Status</th>
+                <th>Клиент</th>
+                <th>Название</th>
+                <th>Осталось/Всего</th>
+                <th>Действует до</th>
+                <th>Статус</th>
               </tr>
             </thead>
             <tbody>
@@ -170,10 +170,10 @@
                 <td>{{ item.name }}</td>
                 <td>{{ item.remaining_procedures }} / {{ item.total_procedures }}</td>
                 <td>{{ formatDateTime(item.expires_at) }}</td>
-                <td>{{ item.status }}</td>
+                <td>{{ enumLabel(item.status) }}</td>
               </tr>
               <tr v-if="!clientPackages.length">
-                <td colspan="5" class="text-center text-secondary py-3">No client packages</td>
+                <td colspan="5" class="text-center text-secondary py-3">Пакетов клиентов нет</td>
               </tr>
             </tbody>
           </table>
@@ -187,6 +187,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { api } from "../services/api";
 import { pushFlash } from "../services/flash";
+import { enumLabel } from "../services/labels";
 
 const templates = ref([]);
 const clientPackages = ref([]);
@@ -227,7 +228,7 @@ function formatDateTime(value) {
   if (!value) {
     return "-";
   }
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString("ru-RU");
 }
 
 async function loadMeta() {
@@ -260,7 +261,7 @@ function applyTemplate() {
 
 async function createTemplate() {
   await api.post("/package-templates", templateForm);
-  pushFlash("Template created");
+  pushFlash("Шаблон создан");
   templateForm.name = "";
   await loadTemplates();
 }
@@ -270,7 +271,7 @@ async function createClientPackage() {
     ...clientPackageForm,
     expires_at: clientPackageForm.expires_at ? new Date(clientPackageForm.expires_at).toISOString() : null,
   });
-  pushFlash("Client package assigned");
+  pushFlash("Пакет назначен клиенту");
   await loadClientPackages();
 }
 

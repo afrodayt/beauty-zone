@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\Admin\StatsController;
 use App\Http\Controllers\Api\Admin\VisitController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('admin.')->group(function (): void {
+Route::prefix('admin')->middleware(['web', 'auth'])->name('admin.')->group(function (): void {
     Route::get('meta', [MetaController::class, 'index'])->name('meta.index');
 
     Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');

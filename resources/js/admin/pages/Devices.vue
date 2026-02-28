@@ -2,27 +2,27 @@
   <div class="row g-4">
     <div class="col-lg-4">
       <div class="card shadow-sm">
-        <div class="card-header fw-semibold">Add Device</div>
+        <div class="card-header fw-semibold">Добавить оборудование</div>
         <div class="card-body">
           <form class="row g-2" @submit.prevent="createDevice">
             <div class="col-12">
-              <label class="form-label">Name</label>
+              <label class="form-label">Название</label>
               <input v-model="form.name" type="text" class="form-control" required />
             </div>
             <div class="col-12">
-              <label class="form-label">Purchased At</label>
+              <label class="form-label">Дата покупки</label>
               <input v-model="form.purchased_at" type="date" class="form-control" />
             </div>
             <div class="col-12">
-              <label class="form-label">Cost, EUR</label>
+              <label class="form-label">Стоимость, EUR</label>
               <input v-model.number="form.cost" type="number" min="0" step="0.01" class="form-control" required />
             </div>
             <div class="col-12">
-              <label class="form-label">Note</label>
+              <label class="form-label">Заметка</label>
               <textarea v-model="form.note" rows="2" class="form-control" />
             </div>
             <div class="col-12">
-              <button class="btn btn-success" type="submit">Create Device</button>
+              <button class="btn btn-success" type="submit">Создать оборудование</button>
             </div>
           </form>
         </div>
@@ -31,16 +31,16 @@
 
     <div class="col-lg-8">
       <div class="card shadow-sm">
-        <div class="card-header fw-semibold">Devices</div>
+        <div class="card-header fw-semibold">Оборудование</div>
         <div class="table-responsive">
           <table class="table mb-0">
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Purchased</th>
-                <th>Cost</th>
-                <th>Note</th>
+                <th>Название</th>
+                <th>Куплено</th>
+                <th>Стоимость</th>
+                <th>Заметка</th>
               </tr>
             </thead>
             <tbody>
@@ -52,7 +52,7 @@
                 <td>{{ item.note || "-" }}</td>
               </tr>
               <tr v-if="!devices.length">
-                <td colspan="5" class="text-center text-secondary py-3">No devices yet.</td>
+                <td colspan="5" class="text-center text-secondary py-3">Оборудования пока нет.</td>
               </tr>
             </tbody>
           </table>
@@ -86,7 +86,7 @@ async function loadDevices() {
 
 async function createDevice() {
   await api.post("/devices", form);
-  pushFlash("Device created");
+  pushFlash("Оборудование создано");
   form.name = "";
   form.purchased_at = "";
   form.cost = 0;

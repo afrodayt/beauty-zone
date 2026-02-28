@@ -5,17 +5,17 @@
         <div class="card-body">
           <div class="row g-2 align-items-end">
             <div class="col-md-3">
-              <label class="form-label">From</label>
+              <label class="form-label">С</label>
               <input v-model="filters.from" type="date" class="form-control" />
             </div>
             <div class="col-md-3">
-              <label class="form-label">To</label>
+              <label class="form-label">По</label>
               <input v-model="filters.to" type="date" class="form-control" />
             </div>
             <div class="col-md-3">
               <button class="btn btn-primary" type="button" @click="loadFinance">
                 <i class="bi bi-arrow-repeat me-1" />
-                Refresh
+                Обновить
               </button>
             </div>
           </div>
@@ -34,20 +34,20 @@
 
     <div class="col-lg-5">
       <div class="card shadow-sm mb-4">
-        <div class="card-header fw-semibold">Add Payment</div>
+        <div class="card-header fw-semibold">Добавить платеж</div>
         <div class="card-body">
           <form class="row g-2" @submit.prevent="createPayment">
             <div class="col-12">
-              <label class="form-label">Client</label>
+              <label class="form-label">Клиент</label>
               <select v-model.number="paymentForm.client_id" class="form-select" required>
-                <option value="">Select client</option>
+                <option value="">Выберите клиента</option>
                 <option v-for="client in meta.clients" :key="client.id" :value="client.id">
                   {{ client.full_name }}
                 </option>
               </select>
             </div>
             <div class="col-6">
-              <label class="form-label">Amount, EUR</label>
+              <label class="form-label">Сумма, EUR</label>
               <input
                 v-model.number="paymentForm.amount"
                 type="number"
@@ -57,38 +57,38 @@
                 required />
             </div>
             <div class="col-6">
-              <label class="form-label">Method</label>
+              <label class="form-label">Метод</label>
               <select v-model="paymentForm.payment_method" class="form-select" required>
                 <option v-for="method in meta.enums.payment_methods" :key="method" :value="method">
-                  {{ method }}
+                  {{ enumLabel(method) }}
                 </option>
               </select>
             </div>
             <div class="col-12">
-              <label class="form-label">Paid At</label>
+              <label class="form-label">Дата оплаты</label>
               <input v-model="paymentForm.paid_at" type="datetime-local" class="form-control" required />
             </div>
             <div class="col-12">
-              <button class="btn btn-success" type="submit">Save Payment</button>
+              <button class="btn btn-success" type="submit">Сохранить платеж</button>
             </div>
           </form>
         </div>
       </div>
 
       <div class="card shadow-sm">
-        <div class="card-header fw-semibold">Add Expense</div>
+        <div class="card-header fw-semibold">Добавить расход</div>
         <div class="card-body">
           <form class="row g-2" @submit.prevent="createExpense">
             <div class="col-6">
-              <label class="form-label">Type</label>
+              <label class="form-label">Тип</label>
               <select v-model="expenseForm.type" class="form-select" required>
                 <option v-for="type in meta.enums.expense_types" :key="type" :value="type">
-                  {{ type }}
+                  {{ enumLabel(type) }}
                 </option>
               </select>
             </div>
             <div class="col-6">
-              <label class="form-label">Amount, EUR</label>
+              <label class="form-label">Сумма, EUR</label>
               <input
                 v-model.number="expenseForm.amount"
                 type="number"
@@ -98,11 +98,11 @@
                 required />
             </div>
             <div class="col-12">
-              <label class="form-label">Date</label>
+              <label class="form-label">Дата</label>
               <input v-model="expenseForm.date" type="date" class="form-control" required />
             </div>
             <div class="col-12">
-              <button class="btn btn-success" type="submit">Save Expense</button>
+              <button class="btn btn-success" type="submit">Сохранить расход</button>
             </div>
           </form>
         </div>
@@ -111,26 +111,26 @@
 
     <div class="col-lg-7">
       <div class="card shadow-sm mb-4">
-        <div class="card-header fw-semibold">Payments</div>
+        <div class="card-header fw-semibold">Платежи</div>
         <div class="table-responsive">
           <table class="table mb-0">
             <thead>
               <tr>
-                <th>Client</th>
-                <th>Paid At</th>
-                <th>Method</th>
-                <th>Amount</th>
+                <th>Клиент</th>
+                <th>Оплачен</th>
+                <th>Метод</th>
+                <th>Сумма</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="item in payments" :key="item.id">
                 <td>{{ item.client?.full_name || item.client_id }}</td>
                 <td>{{ formatDateTime(item.paid_at) }}</td>
-                <td>{{ item.payment_method }}</td>
+                <td>{{ enumLabel(item.payment_method) }}</td>
                 <td>{{ formatMoney(item.amount) }}</td>
               </tr>
               <tr v-if="!payments.length">
-                <td colspan="4" class="text-center text-secondary py-3">No payments</td>
+                <td colspan="4" class="text-center text-secondary py-3">Нет платежей</td>
               </tr>
             </tbody>
           </table>
@@ -138,26 +138,26 @@
       </div>
 
       <div class="card shadow-sm">
-        <div class="card-header fw-semibold">Expenses</div>
+        <div class="card-header fw-semibold">Расходы</div>
         <div class="table-responsive">
           <table class="table mb-0">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Note</th>
+                <th>Дата</th>
+                <th>Тип</th>
+                <th>Сумма</th>
+                <th>Заметка</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="item in expenses" :key="item.id">
                 <td>{{ item.date }}</td>
-                <td>{{ item.type }}</td>
+                <td>{{ enumLabel(item.type) }}</td>
                 <td>{{ formatMoney(item.amount) }}</td>
                 <td>{{ item.note || "-" }}</td>
               </tr>
               <tr v-if="!expenses.length">
-                <td colspan="4" class="text-center text-secondary py-3">No expenses</td>
+                <td colspan="4" class="text-center text-secondary py-3">Нет расходов</td>
               </tr>
             </tbody>
           </table>
@@ -171,6 +171,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { api } from "../services/api";
 import { pushFlash } from "../services/flash";
+import { enumLabel } from "../services/labels";
 
 const today = new Date().toISOString().slice(0, 10);
 const firstDay = `${today.slice(0, 8)}01`;
@@ -215,10 +216,10 @@ const expenseForm = reactive({
 });
 
 const cards = computed(() => [
-  { label: "Revenue", value: `${formatMoney(summary.revenue)} EUR` },
-  { label: "Expenses", value: `${formatMoney(summary.expenses)} EUR` },
-  { label: "Profit", value: `${formatMoney(summary.profit)} EUR` },
-  { label: "Average Check", value: `${formatMoney(summary.average_check)} EUR` },
+  { label: "Выручка", value: `${formatMoney(summary.revenue)} EUR` },
+  { label: "Расходы", value: `${formatMoney(summary.expenses)} EUR` },
+  { label: "Прибыль", value: `${formatMoney(summary.profit)} EUR` },
+  { label: "Средний чек", value: `${formatMoney(summary.average_check)} EUR` },
 ]);
 
 function formatMoney(value) {
@@ -229,7 +230,7 @@ function formatDateTime(value) {
   if (!value) {
     return "-";
   }
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString("ru-RU");
 }
 
 async function loadMeta() {
@@ -250,13 +251,13 @@ async function createPayment() {
     ...paymentForm,
     paid_at: new Date(paymentForm.paid_at).toISOString(),
   });
-  pushFlash("Payment saved");
+  pushFlash("Платеж сохранен");
   await loadFinance();
 }
 
 async function createExpense() {
   await api.post("/expenses", expenseForm);
-  pushFlash("Expense saved");
+  pushFlash("Расход сохранен");
   await loadFinance();
 }
 

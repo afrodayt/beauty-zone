@@ -17,6 +17,13 @@ class AdminApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::factory()->create());
+    }
+
     public function test_it_creates_client_via_admin_api(): void
     {
         $response = $this->postJson('/api/admin/clients', [

@@ -5,20 +5,20 @@
         <div class="card-body">
           <div class="row g-2 align-items-end">
             <div class="col-md-3">
-              <label class="form-label">View</label>
+              <label class="form-label">Режим</label>
               <select v-model="filters.view" class="form-select">
-                <option value="day">Day</option>
-                <option value="week">Week</option>
+                <option value="day">День</option>
+                <option value="week">Неделя</option>
               </select>
             </div>
             <div class="col-md-3">
-              <label class="form-label">Date</label>
+              <label class="form-label">Дата</label>
               <input v-model="filters.date" type="date" class="form-control" />
             </div>
             <div class="col-md-4">
-              <label class="form-label">Master</label>
+              <label class="form-label">Мастер</label>
               <select v-model.number="filters.master_id" class="form-select">
-                <option value="">All masters</option>
+                <option value="">Все мастера</option>
                 <option v-for="master in masters" :key="master.id" :value="master.id">
                   {{ master.name }}
                 </option>
@@ -27,11 +27,11 @@
             <div class="col-md-2 d-flex gap-2">
               <button class="btn btn-primary" type="button" @click="loadEvents">
                 <i class="bi bi-arrow-repeat me-1" />
-                Refresh
+                Обновить
               </button>
               <button class="btn btn-success" type="button" @click="showQuickForm = !showQuickForm">
                 <i class="bi bi-plus-circle me-1" />
-                Quick
+                Быстро
               </button>
             </div>
           </div>
@@ -41,46 +41,46 @@
 
     <div class="col-12" v-if="showQuickForm">
       <div class="card border-success shadow-sm">
-        <div class="card-header fw-semibold">Quick Visit Create</div>
+        <div class="card-header fw-semibold">Быстрое создание визита</div>
         <div class="card-body">
           <form class="row g-2" @submit.prevent="quickCreateVisit">
             <div class="col-md-3">
-              <label class="form-label">Client</label>
+              <label class="form-label">Клиент</label>
               <select v-model.number="quickForm.client_id" class="form-select" required>
-                <option value="">Select client</option>
+                <option value="">Выберите клиента</option>
                 <option v-for="client in clients" :key="client.id" :value="client.id">
                   {{ client.full_name }}
                 </option>
               </select>
             </div>
             <div class="col-md-3">
-              <label class="form-label">Service</label>
+              <label class="form-label">Услуга</label>
               <select v-model.number="quickForm.service_id" class="form-select" required>
-                <option value="">Select service</option>
+                <option value="">Выберите услугу</option>
                 <option v-for="service in services" :key="service.id" :value="service.id">
                   {{ service.name }}
                 </option>
               </select>
             </div>
             <div class="col-md-2">
-              <label class="form-label">Master</label>
+              <label class="form-label">Мастер</label>
               <select v-model.number="quickForm.master_id" class="form-select">
-                <option value="">No master</option>
+                <option value="">Без мастера</option>
                 <option v-for="master in masters" :key="master.id" :value="master.id">
                   {{ master.name }}
                 </option>
               </select>
             </div>
             <div class="col-md-2">
-              <label class="form-label">Starts At</label>
+              <label class="form-label">Начало</label>
               <input v-model="quickForm.starts_at" type="datetime-local" class="form-control" required />
             </div>
             <div class="col-md-1">
-              <label class="form-label">Price</label>
+              <label class="form-label">Цена</label>
               <input v-model.number="quickForm.price" type="number" step="0.01" min="0" class="form-control" required />
             </div>
             <div class="col-md-1 d-flex align-items-end">
-              <button class="btn btn-success w-100" type="submit">Save</button>
+              <button class="btn btn-success w-100" type="submit">Сохранить</button>
             </div>
           </form>
         </div>
@@ -90,19 +90,19 @@
     <div class="col-12">
       <div class="card shadow-sm">
         <div class="card-header fw-semibold d-flex justify-content-between">
-          <span>Schedule</span>
+          <span>Расписание</span>
           <small class="text-secondary">{{ calendar.from_utc }} - {{ calendar.to_utc }}</small>
         </div>
         <div class="table-responsive">
           <table class="table align-middle mb-0">
             <thead>
               <tr>
-                <th>Start</th>
-                <th>End</th>
-                <th>Event</th>
-                <th>Master</th>
-                <th>Zone</th>
-                <th>Status</th>
+                <th>Начало</th>
+                <th>Окончание</th>
+                <th>Событие</th>
+                <th>Мастер</th>
+                <th>Зона</th>
+                <th>Статус</th>
               </tr>
             </thead>
             <tbody>
@@ -115,10 +115,10 @@
                 </td>
                 <td>{{ event.master_name || "-" }}</td>
                 <td>{{ event.zone }}</td>
-                <td>{{ event.visit_status }}</td>
+                <td>{{ enumLabel(event.visit_status) }}</td>
               </tr>
               <tr v-if="!calendar.events.length">
-                <td colspan="6" class="text-center text-secondary py-4">No events for selected period.</td>
+                <td colspan="6" class="text-center text-secondary py-4">На выбранный период событий нет.</td>
               </tr>
             </tbody>
           </table>
@@ -132,6 +132,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { api } from "../services/api";
 import { pushFlash } from "../services/flash";
+import { enumLabel } from "../services/labels";
 
 const showQuickForm = ref(false);
 const masters = ref([]);
@@ -156,12 +157,12 @@ const quickForm = reactive({
   device_id: "",
   master_id: "",
   client_package_id: "",
-  zone: "Body",
+  zone: "Тело",
   starts_at: "",
   price: 0,
   payment_method: "CASH",
   visit_status: "SCHEDULED",
-  master_comment: "Quick create",
+  master_comment: "Быстрое создание",
   deduct_from_package: false,
 });
 
@@ -169,7 +170,7 @@ function formatDateTime(value) {
   if (!value) {
     return "-";
   }
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString("ru-RU");
 }
 
 async function loadMeta() {
@@ -191,7 +192,7 @@ async function quickCreateVisit() {
     ...quickForm,
     starts_at: new Date(quickForm.starts_at).toISOString(),
   });
-  pushFlash("Visit created from calendar");
+  pushFlash("Визит создан из календаря");
   showQuickForm.value = false;
   await loadEvents();
 }

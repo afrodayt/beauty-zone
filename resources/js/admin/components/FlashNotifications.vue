@@ -7,7 +7,7 @@
       :class="`alert-${item.variant}`"
       role="alert">
       {{ item.message }}
-      <button type="button" class="btn-close" aria-label="Close" @click="dismissFlash(item.id)" />
+      <button type="button" class="btn-close" aria-label="Закрыть" @click="dismissFlash(item.id)" />
     </div>
   </div>
 </template>

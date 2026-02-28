@@ -2,7 +2,7 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb mb-0">
       <li class="breadcrumb-item">
-        <RouterLink to="/clients">Admin</RouterLink>
+        <RouterLink to="/clients">Админка</RouterLink>
       </li>
       <li v-if="currentLabel" class="breadcrumb-item active" aria-current="page">
         {{ currentLabel }}
