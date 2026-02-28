@@ -1,19 +1,32 @@
 <template>
-  <BaseModal
-    id="client-edit-modal"
-    title="Редактирование клиента"
-    size="xl"
-    static-backdrop
-    ref="modalRef"
-    @closed="handleModalClosed">
-    <div v-if="loading" class="py-5 text-center text-secondary">
+  <div class="row g-4">
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <h5 class="mb-0">Карточка клиента #{{ clientId || "-" }}</h5>
+        <small class="text-secondary">{{ payload.client?.full_name || "-" }}</small>
+      </div>
+      <div class="d-flex gap-2">
+        <RouterLink class="btn btn-outline-secondary" to="/clients">
+          <i class="bi bi-arrow-left me-1" />
+          К списку
+        </RouterLink>
+        <button class="btn btn-outline-primary" type="button" :disabled="loading || saving" @click="goToNewVisit">
+          <i class="bi bi-journal-plus me-1" />
+          Новый визит
+        </button>
+        <button class="btn btn-primary" type="button" :disabled="loading || saving" @click="saveClient">
+          <i class="bi bi-floppy me-1" />
+          Сохранить
+        </button>
+      </div>
+    </div>
+
+    <div v-if="loading" class="col-12 py-5 text-center text-secondary">
       <div class="spinner-border spinner-border-sm me-2" role="status" />
       Загрузка данных клиента...
     </div>
 
-    <div v-else-if="!selectedClientId" class="text-secondary">Клиент не выбран.</div>
-
-    <div v-else class="row g-4">
+    <template v-else>
       <div class="col-lg-5">
         <h6 class="mb-3">Данные клиента</h6>
         <form class="row g-2" @submit.prevent="saveClient">
@@ -51,24 +64,32 @@
           </div>
           <div class="col-12">
             <div class="form-check">
-              <input id="contra_pregnancy" v-model="form.contra_pregnancy" class="form-check-input" type="checkbox" />
-              <label class="form-check-label" for="contra_pregnancy">Беременность</label>
+              <input
+                id="show-contra-pregnancy"
+                v-model="form.contra_pregnancy"
+                class="form-check-input"
+                type="checkbox" />
+              <label class="form-check-label" for="show-contra-pregnancy">Беременность</label>
             </div>
             <div class="form-check">
-              <input id="contra_allergy" v-model="form.contra_allergy" class="form-check-input" type="checkbox" />
-              <label class="form-check-label" for="contra_allergy">Аллергия</label>
+              <input id="show-contra-allergy" v-model="form.contra_allergy" class="form-check-input" type="checkbox" />
+              <label class="form-check-label" for="show-contra-allergy">Аллергия</label>
             </div>
             <div class="form-check">
               <input
-                id="contra_skin_damage"
+                id="show-contra-skin-damage"
                 v-model="form.contra_skin_damage"
                 class="form-check-input"
                 type="checkbox" />
-              <label class="form-check-label" for="contra_skin_damage">Повреждение кожи</label>
+              <label class="form-check-label" for="show-contra-skin-damage">Повреждение кожи</label>
             </div>
             <div class="form-check">
-              <input id="contra_varicose" v-model="form.contra_varicose" class="form-check-input" type="checkbox" />
-              <label class="form-check-label" for="contra_varicose">Варикоз</label>
+              <input
+                id="show-contra-varicose"
+                v-model="form.contra_varicose"
+                class="form-check-input"
+                type="checkbox" />
+              <label class="form-check-label" for="show-contra-varicose">Варикоз</label>
             </div>
           </div>
         </form>
@@ -181,47 +202,25 @@
           </table>
         </div>
       </div>
-    </div>
-
-    <template #footer>
-      <button class="btn btn-outline-primary" type="button" :disabled="loading || saving" @click="goToNewVisit">
-        <i class="bi bi-journal-plus me-1" />
-        Новый визит
-      </button>
-      <button class="btn btn-outline-secondary" type="button" :disabled="saving" @click="close">Закрыть</button>
-      <button class="btn btn-primary" type="button" :disabled="loading || saving" @click="saveClient">
-        <i class="bi bi-floppy me-1" />
-        Сохранить
-      </button>
     </template>
-  </BaseModal>
+  </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
-import BaseModal from "./BaseModal.vue";
-import ClientStatusBadge from "./ClientStatusBadge.vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import ClientStatusBadge from "../components/ClientStatusBadge.vue";
 import { api } from "../services/api";
-import { eventBus, events } from "../services/eventBus";
 import { pushFlash } from "../services/flash";
 import { enumLabel } from "../services/labels";
 import { phoneToTelHref } from "../services/phone";
 
-const props = defineProps({
-  statuses: {
-    type: Array,
-    default: () => [],
-  },
-});
-
-const emit = defineEmits(["updated"]);
-
+const route = useRoute();
 const router = useRouter();
-const modalRef = ref(null);
+
 const loading = ref(false);
 const saving = ref(false);
-const selectedClientId = ref(null);
+const statuses = ref(["NEW", "ACTIVE", "LOST"]);
 
 const payload = reactive({
   client: null,
@@ -231,6 +230,8 @@ const payload = reactive({
 });
 
 const form = reactive(getDefaultForm());
+
+const clientId = computed(() => Number(route.params.id));
 const phoneLink = computed(() => phoneToTelHref(form.phone));
 
 function getDefaultForm() {
@@ -238,24 +239,13 @@ function getDefaultForm() {
     full_name: "",
     phone: "",
     birth_date: "",
-    status: props.statuses[0] || "NEW",
+    status: "NEW",
     notes: "",
     contra_pregnancy: false,
     contra_allergy: false,
     contra_skin_damage: false,
     contra_varicose: false,
   };
-}
-
-function resetForm() {
-  Object.assign(form, getDefaultForm());
-}
-
-function resetPayload() {
-  payload.client = null;
-  payload.visits = [];
-  payload.payments = [];
-  payload.packages = [];
 }
 
 function mapClientToForm(client) {
@@ -265,7 +255,7 @@ function mapClientToForm(client) {
     full_name: client?.full_name || "",
     phone: client?.phone || "",
     birth_date: client?.birth_date || "",
-    status: client?.status || props.statuses[0] || "NEW",
+    status: client?.status || statuses.value[0] || "NEW",
     notes: client?.notes || "",
     contra_pregnancy: Boolean(contraindications.pregnancy),
     contra_allergy: Boolean(contraindications.allergy),
@@ -286,10 +276,22 @@ function formatDateTime(value) {
   return new Date(value).toLocaleString("ru-RU");
 }
 
-async function loadClient(clientId) {
+async function loadMeta() {
+  const response = await api.get("/meta");
+  statuses.value = response.enums?.client_statuses || statuses.value;
+}
+
+async function loadClient() {
+  const id = clientId.value;
+
+  if (!Number.isInteger(id) || id <= 0) {
+    await router.replace("/clients");
+    return;
+  }
+
   loading.value = true;
   try {
-    const response = await api.get(`/clients/${clientId}`);
+    const response = await api.get(`/clients/${id}`);
     payload.client = response.client?.data || response.client || null;
     payload.visits = response.visits?.data || [];
     payload.payments = response.payments?.data || [];
@@ -300,68 +302,46 @@ async function loadClient(clientId) {
   }
 }
 
-function open(clientId) {
-  selectedClientId.value = clientId;
-  modalRef.value?.open();
-  loadClient(clientId);
-}
-
-function close() {
-  modalRef.value?.close();
-}
-
-function handleOpenEvent(eventPayload) {
-  const clientId = Number(eventPayload?.clientId ?? eventPayload);
-
-  if (!Number.isInteger(clientId) || clientId <= 0) {
-    return;
-  }
-
-  resetForm();
-  resetPayload();
-  open(clientId);
-}
-
 async function saveClient() {
-  if (!selectedClientId.value || loading.value) {
+  const id = clientId.value;
+
+  if (!Number.isInteger(id) || id <= 0 || loading.value) {
     return;
   }
 
   saving.value = true;
   try {
-    const response = await api.put(`/clients/${selectedClientId.value}`, form);
+    const response = await api.put(`/clients/${id}`, form);
     payload.client = response.data || response;
     pushFlash("Клиент обновлен");
-    emit("updated");
-    close();
+    await loadClient();
   } finally {
     saving.value = false;
   }
 }
 
 function goToNewVisit() {
-  if (!selectedClientId.value) {
+  const id = clientId.value;
+
+  if (!Number.isInteger(id) || id <= 0) {
     return;
   }
 
-  close();
   router.push({
     path: "/visits/new",
-    query: { client_id: String(selectedClientId.value) },
+    query: { client_id: String(id) },
   });
 }
 
-function handleModalClosed() {
-  selectedClientId.value = null;
-  resetForm();
-  resetPayload();
-}
+watch(
+  () => route.params.id,
+  () => {
+    loadClient();
+  }
+);
 
-onMounted(() => {
-  eventBus.$on(events.SHOW_CLIENT_EDIT_MODAL, handleOpenEvent);
-});
-
-onBeforeUnmount(() => {
-  eventBus.$off(events.SHOW_CLIENT_EDIT_MODAL, handleOpenEvent);
+onMounted(async () => {
+  await loadMeta();
+  await loadClient();
 });
 </script>

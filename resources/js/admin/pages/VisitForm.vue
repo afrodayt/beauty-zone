@@ -15,6 +15,12 @@
                   {{ client.full_name }} ({{ client.phone }})
                 </option>
               </select>
+              <div v-if="selectedClientPhoneLink" class="mt-2">
+                <a :href="selectedClientPhoneLink" class="btn btn-sm btn-outline-success">
+                  <i class="bi bi-telephone me-1" />
+                  Позвонить: {{ selectedClient?.phone }}
+                </a>
+              </div>
             </div>
             <div class="col-md-6">
               <label class="form-label">Услуга</label>
@@ -119,6 +125,7 @@ import { useRoute, useRouter } from "vue-router";
 import { api } from "../services/api";
 import { pushFlash } from "../services/flash";
 import { enumLabel } from "../services/labels";
+import { phoneToTelHref } from "../services/phone";
 
 const route = useRoute();
 const router = useRouter();
@@ -155,6 +162,11 @@ const isEdit = computed(() => Boolean(route.params.id));
 const filteredPackages = computed(() =>
   meta.active_packages.filter((item) => Number(item.client_id) === Number(form.client_id))
 );
+
+const selectedClient = computed(
+  () => meta.clients.find((client) => Number(client.id) === Number(form.client_id)) || null
+);
+const selectedClientPhoneLink = computed(() => phoneToTelHref(selectedClient.value?.phone));
 
 function toDateTimeLocal(value) {
   if (!value) {

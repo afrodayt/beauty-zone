@@ -80,6 +80,12 @@
                   <td>{{ client.balance_eur.toFixed(2) }}</td>
                   <td class="text-end">
                     <div class="d-inline-flex gap-2">
+                      <RouterLink
+                        class="btn btn-sm btn-outline-secondary"
+                        :to="`/clients/${client.id}`"
+                        title="Открыть страницу клиента">
+                        <i class="bi bi-box-arrow-up-right" />
+                      </RouterLink>
                       <button
                         type="button"
                         class="btn btn-sm btn-outline-primary"
@@ -139,6 +145,7 @@ import ClientStatusBadge from "../components/ClientStatusBadge.vue";
 import { api } from "../services/api";
 import { eventBus, events } from "../services/eventBus";
 import { enumLabel } from "../services/labels";
+import { phoneToTelHref } from "../services/phone";
 
 const route = useRoute();
 const router = useRouter();
@@ -196,8 +203,13 @@ function openDeleteModal(client) {
   });
 }
 
-function handleClientCreated() {
-  loadClients(1);
+async function handleClientCreated(createdClient) {
+  await loadClients(1);
+
+  const clientId = Number(createdClient?.id);
+  if (Number.isInteger(clientId) && clientId > 0) {
+    openEditModal(clientId);
+  }
 }
 
 function handleClientUpdated() {
@@ -208,23 +220,6 @@ function handleClientDeleted() {
   const currentPage = meta.value.current_page || 1;
   const nextPage = clients.value.length === 1 ? Math.max(1, currentPage - 1) : currentPage;
   loadClients(nextPage);
-}
-
-function phoneToTelHref(phone) {
-  const raw = String(phone || "").trim();
-
-  if (!raw) {
-    return "";
-  }
-
-  const hasLeadingPlus = raw.startsWith("+");
-  const digits = raw.replace(/\D/g, "");
-
-  if (!digits) {
-    return "";
-  }
-
-  return hasLeadingPlus ? `tel:+${digits}` : `tel:${digits}`;
 }
 
 watch(

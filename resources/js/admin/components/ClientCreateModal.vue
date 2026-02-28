@@ -92,9 +92,10 @@ function close() {
 async function createClient() {
   loading.value = true;
   try {
-    await api.post("/clients", form);
+    const response = await api.post("/clients", form);
+    const createdClient = response?.data || response;
     pushFlash("Клиент создан");
-    emit("created");
+    emit("created", createdClient);
     close();
   } finally {
     loading.value = false;
