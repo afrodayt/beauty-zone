@@ -65,7 +65,15 @@
                 <tr v-for="client in clients" :key="client.id">
                   <td>{{ client.id }}</td>
                   <td>{{ client.full_name }}</td>
-                  <td>{{ client.phone }}</td>
+                  <td>
+                    <a
+                      v-if="phoneToTelHref(client.phone)"
+                      :href="phoneToTelHref(client.phone)"
+                      class="link-primary text-decoration-none">
+                      {{ client.phone }}
+                    </a>
+                    <span v-else>{{ client.phone || "-" }}</span>
+                  </td>
                   <td>
                     <ClientStatusBadge :status="client.status" />
                   </td>
@@ -200,6 +208,23 @@ function handleClientDeleted() {
   const currentPage = meta.value.current_page || 1;
   const nextPage = clients.value.length === 1 ? Math.max(1, currentPage - 1) : currentPage;
   loadClients(nextPage);
+}
+
+function phoneToTelHref(phone) {
+  const raw = String(phone || "").trim();
+
+  if (!raw) {
+    return "";
+  }
+
+  const hasLeadingPlus = raw.startsWith("+");
+  const digits = raw.replace(/\D/g, "");
+
+  if (!digits) {
+    return "";
+  }
+
+  return hasLeadingPlus ? `tel:+${digits}` : `tel:${digits}`;
 }
 
 watch(
