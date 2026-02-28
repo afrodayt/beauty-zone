@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Admin\PackageTemplateController;
 use App\Http\Controllers\Api\Admin\PaymentController;
 use App\Http\Controllers\Api\Admin\ServiceController;
 use App\Http\Controllers\Api\Admin\StatsController;
+use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\VisitController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,4 +34,5 @@ Route::prefix('admin')->middleware(['web', 'auth'])->name('admin.')->group(funct
         ->parameters(['client-packages' => 'clientPackage']);
     Route::apiResource('payments', PaymentController::class);
     Route::apiResource('expenses', ExpenseController::class);
+    Route::apiResource('users', UserController::class)->only(['index', 'store']);
 });

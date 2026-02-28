@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Вход в админку</title>
+    @include('partials.favicon')
     @vite('resources/css/app.less')
 </head>
 <body class="bg-light">

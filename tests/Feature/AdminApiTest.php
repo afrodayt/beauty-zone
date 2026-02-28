@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\ClientStatus;
 use App\Enums\PackageStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\UserRole;
 use App\Enums\VisitStatus;
 use App\Models\Client;
 use App\Models\ClientPackage;
@@ -91,5 +92,24 @@ class AdminApiTest extends TestCase
 
         $this->assertSame(1, $package->remaining_procedures);
         $this->assertDatabaseCount('package_redemptions', 1);
+    }
+
+    public function test_it_creates_master_user_via_admin_api(): void
+    {
+        $response = $this->postJson('/api/admin/users', [
+            'name' => 'Master User',
+            'email' => 'master@example.com',
+            'role' => UserRole::MASTER->value,
+            'password' => 'secret123',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.email', 'master@example.com')
+            ->assertJsonPath('data.role', UserRole::MASTER->value);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'master@example.com',
+            'role' => UserRole::MASTER->value,
+        ]);
     }
 }

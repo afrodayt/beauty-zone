@@ -10,6 +10,8 @@ const enumLabels = {
   CARD: "Карта",
   TRANSFER: "Перевод",
   PACKAGE: "Пакет",
+  ADMIN: "Администратор",
+  MASTER: "Мастер",
   EXPIRED: "Истек",
   EXHAUSTED: "Израсходован",
   RENT: "Аренда",

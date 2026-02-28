@@ -6,6 +6,7 @@ use App\Enums\ClientStatus;
 use App\Enums\ExpenseType;
 use App\Enums\PackageStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\UserRole;
 use App\Enums\VisitStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
@@ -24,7 +25,11 @@ class MetaController extends Controller
             'clients' => Client::query()->select(['id', 'full_name', 'phone'])->orderBy('full_name')->limit(200)->get(),
             'services' => Service::query()->select(['id', 'name', 'color', 'base_price'])->where('is_active', true)->orderBy('name')->get(),
             'devices' => Device::query()->select(['id', 'name'])->orderBy('name')->get(),
-            'masters' => User::query()->select(['id', 'name', 'email'])->orderBy('name')->get(),
+            'masters' => User::query()
+                ->select(['id', 'name', 'email'])
+                ->where('role', UserRole::MASTER->value)
+                ->orderBy('name')
+                ->get(),
             'package_templates' => PackageTemplate::query()->select(['id', 'name', 'procedure_count', 'price'])->where('is_active', true)->orderBy('name')->get(),
             'active_packages' => ClientPackage::query()
                 ->select(['id', 'client_id', 'name', 'remaining_procedures', 'expires_at'])

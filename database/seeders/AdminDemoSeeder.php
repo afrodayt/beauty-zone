@@ -6,6 +6,7 @@ use App\Enums\ClientStatus;
 use App\Enums\ExpenseType;
 use App\Enums\PackageStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\UserRole;
 use App\Enums\VisitStatus;
 use App\Models\Client;
 use App\Models\ClientPackage;
@@ -30,7 +31,7 @@ class AdminDemoSeeder extends Seeder
     {
         $admin = User::query()->firstOrCreate(
             ['email' => 'admin@gmail.com'],
-            ['name' => 'Admin', 'password' => Hash::make('admin@gmail.com')]
+            ['name' => 'Admin', 'password' => Hash::make('admin@gmail.com'), 'role' => UserRole::ADMIN->value]
         );
 
         $services = collect([

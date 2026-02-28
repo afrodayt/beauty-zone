@@ -8,6 +8,7 @@ import Packages from "./pages/Packages.vue";
 import Devices from "./pages/Devices.vue";
 import Stats from "./pages/Stats.vue";
 import Finance from "./pages/Finance.vue";
+import Users from "./pages/Users.vue";
 
 export function createRouter() {
   return createVueRouter({
@@ -35,6 +36,7 @@ export function createRouter() {
           { path: "/calendar", name: "calendar", component: CalendarView, meta: { breadcrumb: "Календарь" } },
           { path: "/packages", name: "packages", component: Packages, meta: { breadcrumb: "Пакеты" } },
           { path: "/devices", name: "devices", component: Devices, meta: { breadcrumb: "Оборудование" } },
+          { path: "/users", name: "users", component: Users, meta: { breadcrumb: "Пользователи" } },
           { path: "/stats", name: "stats", component: Stats, meta: { breadcrumb: "Отчеты" } },
           { path: "/finance", name: "finance", component: Finance, meta: { breadcrumb: "Финансы" } },
         ],
