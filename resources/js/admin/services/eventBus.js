@@ -48,4 +48,5 @@ export const eventBus = {
 
 export const events = {
   SHOW_CLIENT_CREATE_MODAL: "SHOW_CLIENT_CREATE_MODAL",
+  SHOW_CLIENT_EDIT_MODAL: "SHOW_CLIENT_EDIT_MODAL",
 };

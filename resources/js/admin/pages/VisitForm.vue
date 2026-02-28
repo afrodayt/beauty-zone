@@ -226,7 +226,12 @@ async function submitVisit() {
     pushFlash("Визит создан");
   }
 
-  await router.push(`/clients/${form.client_id}`);
+  await router.push({
+    path: "/clients",
+    query: {
+      edit_client_id: String(form.client_id),
+    },
+  });
 }
 
 onMounted(async () => {

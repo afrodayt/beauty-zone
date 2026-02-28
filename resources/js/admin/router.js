@@ -1,7 +1,6 @@
 import { createRouter as createVueRouter, createWebHashHistory } from "vue-router";
 import AdminLayout from "./layouts/AdminLayout.vue";
 import ClientsList from "./pages/ClientsList.vue";
-import ClientShow from "./pages/ClientShow.vue";
 import VisitForm from "./pages/VisitForm.vue";
 import CalendarView from "./pages/CalendarView.vue";
 import Packages from "./pages/Packages.vue";
@@ -22,9 +21,12 @@ export function createRouter() {
           { path: "/clients", name: "clients", component: ClientsList, meta: { breadcrumb: "Клиенты" } },
           {
             path: "/clients/:id",
-            name: "client-show",
-            component: ClientShow,
-            meta: { breadcrumb: "Карточка клиента" },
+            redirect: (to) => ({
+              path: "/clients",
+              query: {
+                edit_client_id: String(to.params.id),
+              },
+            }),
           },
           { path: "/visits/new", name: "visit-create", component: VisitForm, meta: { breadcrumb: "Новый визит" } },
           {

@@ -71,9 +71,13 @@
                   </td>
                   <td>{{ client.balance_eur.toFixed(2) }}</td>
                   <td class="text-end">
-                    <RouterLink class="btn btn-sm btn-outline-primary" :to="`/clients/${client.id}`">
-                      Открыть
-                    </RouterLink>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-primary"
+                      title="Редактировать клиента"
+                      @click="openEditModal(client.id)">
+                      <i class="bi bi-pencil-square" />
+                    </button>
                   </td>
                 </tr>
                 <tr v-if="!clients.length">
@@ -103,16 +107,21 @@
       </div>
     </div>
     <ClientCreateModal :statuses="statuses" @created="handleClientCreated" />
+    <ClientEditModal :statuses="statuses" @updated="handleClientUpdated" />
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import ClientCreateModal from "../components/ClientCreateModal.vue";
+import ClientEditModal from "../components/ClientEditModal.vue";
 import { api } from "../services/api";
 import { eventBus, events } from "../services/eventBus";
 import { enumLabel } from "../services/labels";
 
+const route = useRoute();
+const router = useRouter();
 const loading = ref(false);
 const statuses = ref(["NEW", "ACTIVE", "LOST"]);
 const clients = ref([]);
@@ -156,12 +165,40 @@ function openCreateModal() {
   eventBus.$emit(events.SHOW_CLIENT_CREATE_MODAL);
 }
 
+function openEditModal(clientId) {
+  eventBus.$emit(events.SHOW_CLIENT_EDIT_MODAL, { clientId });
+}
+
 function handleClientCreated() {
   loadClients(1);
 }
 
+function handleClientUpdated() {
+  loadClients(meta.value.current_page || 1);
+}
+
+watch(
+  () => route.query.edit_client_id,
+  (value) => handleEditClientFromQuery(value)
+);
+
 onMounted(async () => {
   await loadMeta();
   await loadClients(1);
+  handleEditClientFromQuery(route.query.edit_client_id);
 });
+
+function handleEditClientFromQuery(queryValue) {
+  const clientId = Number(queryValue);
+
+  if (!Number.isInteger(clientId) || clientId <= 0) {
+    return;
+  }
+
+  openEditModal(clientId);
+
+  const nextQuery = { ...route.query };
+  delete nextQuery.edit_client_id;
+  router.replace({ path: route.path, query: nextQuery });
+}
 </script>
