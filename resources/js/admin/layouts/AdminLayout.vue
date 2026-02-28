@@ -15,8 +15,7 @@
           </nav>
         </div>
         <div class="d-flex align-items-center gap-3">
-          <span class="text-secondary small">UTC: {{ utcNow }}</span>
-          <span class="text-secondary small">Все суммы в EUR</span>
+          <span class="text-secondary small">{{ userDisplayName }}</span>
           <button type="button" class="btn btn-sm btn-outline-secondary" @click="logout">Выйти</button>
         </div>
       </div>
@@ -47,7 +46,10 @@ const navItems = [
   { to: "/finance", label: "Финансы", icon: "bi-cash-stack" },
 ];
 
-const utcNow = computed(() => new Date().toISOString().replace("T", " ").slice(0, 16));
+const userDisplayName = computed(() => {
+  const user = window.__ADMIN_USER__ || {};
+  return user.name || user.email || "Пользователь";
+});
 
 async function logout() {
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
