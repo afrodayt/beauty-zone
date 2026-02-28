@@ -1,0 +1,9 @@
+{
+    "tabWidth": 2,
+    "htmlWhitespaceSensitivity": "ignore",
+    "vueIndentScriptAndStyle": false,
+    "embeddedLanguageFormatting": "auto",
+    "bracketSameLine": true,
+    "printWidth": 120,
+    "endOfLine": "auto"
+}

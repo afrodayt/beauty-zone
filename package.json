@@ -1,0 +1,35 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "lint": "eslint --ext .js,.vue resources/js",
+        "lint:fix": "eslint --ext .js,.vue resources/js --fix"
+    },
+    "devDependencies": {
+        "@babel/eslint-parser": "^7.27.0",
+        "@tailwindcss/vite": "^4.0.0",
+        "axios": "^1.11.0",
+        "concurrently": "^9.0.1",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-vue": "^8.0.3",
+        "globals": "^16.3.0",
+        "laravel-vite-plugin": "^2.0.0",
+        "less": "^4.4.0",
+        "prettier": "^2.8.8",
+        "vite": "^7.0.4",
+        "vite-plugin-eslint": "^1.8.1"
+    },
+    "dependencies": {
+        "@popperjs/core": "^2.11.8",
+        "@vitejs/plugin-vue": "^6.0.1",
+        "bootstrap": "^5.3.7",
+        "bootstrap-icons": "^1.13.1",
+        "vue": "^3.5.18",
+        "vue-router": "^4.6.3"
+    }
+}
